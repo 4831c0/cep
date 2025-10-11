@@ -1,16 +1,17 @@
+use aes_gcm::Error;
 use rand::rand_core::OsRng;
 use rand::TryRngCore;
-
-pub struct Keypair {
-    pub public : Vec<u8>,
-    pub private: Vec<u8>
-}
 
 pub fn random_array<const L: usize>() -> [u8; L] {
     let mut rng = OsRng;
     let mut seed = [0; L];
     rng.try_fill_bytes(&mut seed).unwrap();
     seed
+}
+
+pub struct Keypair {
+    pub public : Vec<u8>,
+    pub private: Vec<u8>
 }
 
 pub struct EncapsulatedKey {
@@ -23,4 +24,11 @@ pub trait Encapsulate {
     fn generate_keypair() -> Keypair;
     fn encapsulate(pub_key: &[u8]) -> EncapsulatedKey;
     fn decapsulate(ciphertext: &[u8], priv_key: &[u8]) -> Vec<u8>;
+}
+
+pub trait Encrypt {
+    fn key_size() -> usize;
+    fn generate_key() -> Vec<u8>;
+    fn encrypt(plaintext: &[u8], key: &[u8]) -> Result<Vec<u8>, Error>;
+    fn decrypt(ciphertext: &[u8], key: &[u8]) -> Result<Vec<u8>, Error>;
 }

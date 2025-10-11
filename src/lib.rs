@@ -3,9 +3,11 @@ extern crate core;
 mod mlkem;
 mod common;
 mod x25519;
+mod aes;
 
 #[cfg(test)]
 mod tests {
+    use crate::aes::AesGcm256;
     use crate::mlkem::*;
     use crate::common::*;
     use crate::x25519::X25519Encapsulation;
@@ -65,7 +67,7 @@ mod tests {
     }
 
     #[test]
-    fn x25519_keysize() {
+    fn x25519_key_size() {
         let size = X25519Encapsulation::key_size();
         let pair = X25519Encapsulation::generate_keypair();
 
@@ -80,5 +82,33 @@ mod tests {
         let decap = X25519Encapsulation::decapsulate(&*cap.ciphertext, &*pair.private);
 
         assert_eq!(cap.shared_key, decap);
+    }
+
+    #[test]
+    fn aes_gcm256_key_size() {
+        let key = AesGcm256::generate_key();
+
+        assert_eq!(AesGcm256::key_size(), key.len());
+    }
+
+    fn aes_256_gcm_enc_dec(plain : &[u8]) -> (Vec<u8>, Vec<u8>) {
+        let key = AesGcm256::generate_key();
+        let ciphertext = AesGcm256::encrypt(plain, key.as_slice());
+        let plain2 = AesGcm256::decrypt(ciphertext.unwrap().as_slice(), key.as_slice());
+
+        (plain.to_vec(), plain2.unwrap())
+    }
+
+    #[test]
+    fn aes_gcm256_encrypt_decrypt() {
+        let test1 = aes_256_gcm_enc_dec(b"");
+        let test2 = aes_256_gcm_enc_dec(b"Hello");
+        let test3 = aes_256_gcm_enc_dec(b"Hello, World!");
+        let test4 = aes_256_gcm_enc_dec(b"Hello, World!Hello, World!Hello");
+
+        assert_eq!(test1.0, test1.1);
+        assert_eq!(test2.0, test2.1);
+        assert_eq!(test3.0, test3.1);
+        assert_eq!(test4.0, test4.1);
     }
 }
