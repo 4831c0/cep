@@ -21,14 +21,15 @@ pub struct EncapsulatedKey {
 
 pub trait Encapsulate {
     fn key_size() -> (usize, usize);
-    fn generate_keypair() -> Keypair;
-    fn encapsulate(pub_key: &[u8]) -> EncapsulatedKey;
-    fn decapsulate(ciphertext: &[u8], priv_key: &[u8]) -> Vec<u8>;
+    fn generate_keypair() -> Self;
+    fn from_pk(pk : &[u8]) -> Self;
+    fn encapsulate(&self) -> EncapsulatedKey;
+    fn decapsulate(&self, ciphertext: &[u8]) -> Vec<u8>;
 }
 
 pub trait Encrypt {
     fn key_size() -> usize;
-    fn generate_key() -> Vec<u8>;
-    fn encrypt(plaintext: &[u8], key: &[u8]) -> Result<Vec<u8>, Error>;
-    fn decrypt(ciphertext: &[u8], key: &[u8]) -> Result<Vec<u8>, Error>;
+    fn generate_key() -> Self;
+    fn encrypt(&self, plaintext: &[u8]) -> Result<Vec<u8>, Error>;
+    fn decrypt(&self, ciphertext: &[u8]) -> Result<Vec<u8>, Error>;
 }

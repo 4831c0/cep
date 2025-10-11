@@ -17,15 +17,16 @@ mod tests {
         let size = MlKem512Encapsulation::key_size();
         let pair = MlKem512Encapsulation::generate_keypair();
 
-        assert_eq!(size.0, pair.public.len());
-        assert_eq!(size.1, pair.private.len());
+        assert_eq!(size.0, pair.keypair.public.len());
+        assert_eq!(size.1, pair.keypair.private.len());
     }
 
     #[test]
     fn ml_kem512_encryption_decryption() {
-        let pair = MlKem512Encapsulation::generate_keypair();
-        let cap = MlKem512Encapsulation::encapsulate(&*pair.public);
-        let decap = MlKem512Encapsulation::decapsulate(&*cap.ciphertext, &*pair.private);
+        let pair_pubpriv = MlKem512Encapsulation::generate_keypair();
+        let pair_pub = MlKem512Encapsulation::from_pk(pair_pubpriv.keypair.public.as_slice());
+        let cap = pair_pub.encapsulate();
+        let decap = pair_pubpriv.decapsulate(cap.ciphertext.as_slice());
 
         assert_eq!(cap.shared_key, decap);
     }
@@ -35,15 +36,16 @@ mod tests {
         let size = MlKem768Encapsulation::key_size();
         let pair = MlKem768Encapsulation::generate_keypair();
 
-        assert_eq!(size.0, pair.public.len());
-        assert_eq!(size.1, pair.private.len());
+        assert_eq!(size.0, pair.keypair.public.len());
+        assert_eq!(size.1, pair.keypair.private.len());
     }
 
     #[test]
     fn ml_kem768_encryption_decryption() {
-        let pair = MlKem768Encapsulation::generate_keypair();
-        let cap = MlKem768Encapsulation::encapsulate(&*pair.public);
-        let decap = MlKem768Encapsulation::decapsulate(&*cap.ciphertext, &*pair.private);
+        let pair_pubpriv = MlKem768Encapsulation::generate_keypair();
+        let pair_pub = MlKem768Encapsulation::from_pk(pair_pubpriv.keypair.public.as_slice());
+        let cap = pair_pub.encapsulate();
+        let decap = pair_pubpriv.decapsulate(cap.ciphertext.as_slice());
 
         assert_eq!(cap.shared_key, decap);
     }
@@ -53,15 +55,16 @@ mod tests {
         let size = MlKem1024Encapsulation::key_size();
         let pair = MlKem1024Encapsulation::generate_keypair();
 
-        assert_eq!(size.0, pair.public.len());
-        assert_eq!(size.1, pair.private.len());
+        assert_eq!(size.0, pair.keypair.public.len());
+        assert_eq!(size.1, pair.keypair.private.len());
     }
 
     #[test]
     fn ml_kem1024_encryption_decryption() {
-        let pair = MlKem1024Encapsulation::generate_keypair();
-        let cap = MlKem1024Encapsulation::encapsulate(&*pair.public);
-        let decap = MlKem1024Encapsulation::decapsulate(&*cap.ciphertext, &*pair.private);
+        let pair_pubpriv = MlKem1024Encapsulation::generate_keypair();
+        let pair_pub = MlKem1024Encapsulation::from_pk(pair_pubpriv.keypair.public.as_slice());
+        let cap = pair_pub.encapsulate();
+        let decap = pair_pubpriv.decapsulate(cap.ciphertext.as_slice());
 
         assert_eq!(cap.shared_key, decap);
     }
@@ -71,30 +74,31 @@ mod tests {
         let size = X25519Encapsulation::key_size();
         let pair = X25519Encapsulation::generate_keypair();
 
-        assert_eq!(size.0, pair.public.len());
-        assert_eq!(size.1, pair.private.len());
+        assert_eq!(size.0, pair.keypair.public.len());
+        assert_eq!(size.1, pair.keypair.private.len());
     }
 
     #[test]
     fn x25519_encryption_decryption() {
-        let pair = X25519Encapsulation::generate_keypair();
-        let cap = X25519Encapsulation::encapsulate(&*pair.public);
-        let decap = X25519Encapsulation::decapsulate(&*cap.ciphertext, &*pair.private);
+        let pair_pubpriv = X25519Encapsulation::generate_keypair();
+        let pair_pub = X25519Encapsulation::from_pk(pair_pubpriv.keypair.public.as_slice());
+        let cap = pair_pub.encapsulate();
+        let decap = pair_pubpriv.decapsulate(cap.ciphertext.as_slice());
 
         assert_eq!(cap.shared_key, decap);
     }
 
     #[test]
     fn aes_gcm256_key_size() {
-        let key = AesGcm256::generate_key();
+        let cipher = AesGcm256::generate_key();
 
-        assert_eq!(AesGcm256::key_size(), key.len());
+        assert_eq!(AesGcm256::key_size(), cipher.key.len());
     }
 
     fn aes_256_gcm_enc_dec(plain : &[u8]) -> (Vec<u8>, Vec<u8>) {
-        let key = AesGcm256::generate_key();
-        let ciphertext = AesGcm256::encrypt(plain, key.as_slice());
-        let plain2 = AesGcm256::decrypt(ciphertext.unwrap().as_slice(), key.as_slice());
+        let cipher = AesGcm256::generate_key();
+        let ciphertext = cipher.encrypt(plain);
+        let plain2 = cipher.decrypt(ciphertext.unwrap().as_slice());
 
         (plain.to_vec(), plain2.unwrap())
     }
