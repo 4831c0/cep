@@ -29,6 +29,10 @@ impl Encapsulate for MlKem512Encapsulation {
         }
     }
 
+    fn get_keypair(&self) -> Keypair {
+        self.keypair.clone()
+    }
+
     fn from_pk(pk: &[u8]) -> Self {
         Self {
             keypair: Keypair {
@@ -57,7 +61,6 @@ impl Encapsulate for MlKem512Encapsulation {
             shared_key: shared_secret.as_slice().to_vec()
         }
     }
-
     fn decapsulate(&self, ciphertext: &[u8]) -> Vec<u8> {
         let mut k = [0u8; 1632];
         k.copy_from_slice(self.keypair.private.as_slice());
@@ -92,6 +95,10 @@ impl Encapsulate for MlKem768Encapsulation {
         }
     }
 
+    fn get_keypair(&self) -> Keypair {
+        self.keypair.clone()
+    }
+
     fn from_pk(pk: &[u8]) -> Self {
         Self {
             keypair: Keypair {
@@ -120,7 +127,6 @@ impl Encapsulate for MlKem768Encapsulation {
             shared_key: shared_secret.as_slice().to_vec()
         }
     }
-
     fn decapsulate(&self, ciphertext: &[u8]) -> Vec<u8> {
         let mut k = [0u8; 2400];
         k.copy_from_slice(self.keypair.private.as_slice());
@@ -153,6 +159,10 @@ impl Encapsulate for MlKem1024Encapsulation {
                 private: priv_key
             }
         }
+    }
+
+    fn get_keypair(&self) -> Keypair {
+        self.keypair.clone()
     }
 
     fn from_pk(pk: &[u8]) -> Self {

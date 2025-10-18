@@ -9,6 +9,7 @@ pub fn random_array<const L: usize>() -> [u8; L] {
     seed
 }
 
+#[derive(Clone)]
 pub struct Keypair {
     pub public : Vec<u8>,
     pub private: Vec<u8>
@@ -22,6 +23,7 @@ pub struct EncapsulatedKey {
 pub trait Encapsulate {
     fn key_size() -> (usize, usize);
     fn generate_keypair() -> Self;
+    fn get_keypair(&self) -> Keypair;
     fn from_pk(pk : &[u8]) -> Self;
     fn encapsulate(&self) -> EncapsulatedKey;
     fn decapsulate(&self, ciphertext: &[u8]) -> Vec<u8>;

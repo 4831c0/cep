@@ -49,6 +49,10 @@ impl Encapsulate for X25519Encapsulation {
         }
     }
 
+    fn get_keypair(&self) -> Keypair {
+        self.keypair.clone()
+    }
+
     fn from_pk(pk: &[u8]) -> Self {
         Self {
             keypair: Keypair {
