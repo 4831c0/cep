@@ -2,6 +2,11 @@
 name = "cep"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "Common encryption protocols"
+homepage = "https://github.com/4831c0/cep"
+repository = "https://github.com/4831c0/cep"
+readme = "README.md"
 
 [dependencies]
 aes-gcm = "0.10.3"
