@@ -1,11 +1,11 @@
 extern crate core;
 
-mod mlkem;
-mod common;
-mod x25519;
-mod aes;
-mod e2echannel;
-mod error;
+pub mod mlkem;
+pub mod common;
+pub mod x25519;
+pub mod aes;
+pub mod e2echannel;
+pub mod error;
 
 #[cfg(test)]
 mod tests {
