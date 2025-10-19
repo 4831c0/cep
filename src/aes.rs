@@ -1,6 +1,8 @@
 use crate::common::{random_array, Encrypt};
 use aes_gcm::aead::{Aead, OsRng};
 use aes_gcm::{AeadCore, Aes256Gcm, Error, Key, KeyInit, Nonce};
+use crate::error::CepError;
+use crate::error::CepError::InvalidKey;
 
 pub struct AesGcm256 {
     pub key: Vec<u8>
@@ -17,6 +19,18 @@ impl Encrypt for AesGcm256 {
         Self {
             key: arr.to_vec()
         }
+    }
+
+    fn from_key(key: &[u8]) -> Result<Self, CepError> {
+        if key.len() != Self::key_size() {
+            return Err(InvalidKey);
+        }
+        let mut arr = [0u8; 32];
+        arr.copy_from_slice(key);
+
+        Ok(Self {
+            key: arr.to_vec()
+        })
     }
 
     fn encrypt(&self, plaintext: &[u8]) -> Result<Vec<u8>, Error> {

@@ -1,6 +1,7 @@
 use aes_gcm::Error;
 use rand::rand_core::OsRng;
 use rand::TryRngCore;
+use crate::error::CepError;
 
 pub fn random_array<const L: usize>() -> [u8; L] {
     let mut rng = OsRng;
@@ -32,6 +33,7 @@ pub trait Encapsulate {
 pub trait Encrypt {
     fn key_size() -> usize;
     fn generate_key() -> Self;
+    fn from_key(key: &[u8]) -> Result<Self, CepError> where Self: Sized;
     fn encrypt(&self, plaintext: &[u8]) -> Result<Vec<u8>, Error>;
     fn decrypt(&self, ciphertext: &[u8]) -> Result<Vec<u8>, Error>;
 }

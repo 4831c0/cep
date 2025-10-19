@@ -4,12 +4,15 @@ mod mlkem;
 mod common;
 mod x25519;
 mod aes;
+mod e2echannel;
+mod error;
 
 #[cfg(test)]
 mod tests {
     use crate::aes::AesGcm256;
     use crate::mlkem::*;
     use crate::common::*;
+    use crate::e2echannel::{EncryptedChannelA, EncryptedChannelB};
     use crate::x25519::X25519Encapsulation;
 
     #[test]
@@ -114,5 +117,25 @@ mod tests {
         assert_eq!(test2.0, test2.1);
         assert_eq!(test3.0, test3.1);
         assert_eq!(test4.0, test4.1);
+    }
+
+    #[test]
+    fn e2ee_channel() {
+        let mut channel_a = EncryptedChannelA::<MlKem1024Encapsulation, AesGcm256>::new();
+        let mut channel_b = EncryptedChannelB::<MlKem1024Encapsulation, AesGcm256>::new();
+
+        let handshake_a = channel_a.handshake_start().unwrap();
+        let handshake_b = channel_b.handshake(handshake_a).unwrap();
+        channel_a.handshake_finish(handshake_b).unwrap();
+
+        let channel_a_enc = channel_a.enc.as_ref().unwrap();
+        let channel_b_enc = channel_b.enc.as_ref().unwrap();
+
+        let plain_msg = b"Hello, World!";
+        let enc_msg = channel_a_enc.encrypt(plain_msg).unwrap();
+        let dec_msg = channel_b_enc.decrypt(enc_msg.as_slice()).unwrap();
+
+        assert_eq!(plain_msg, dec_msg.as_slice());
+
     }
 }
