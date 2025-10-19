@@ -22,7 +22,7 @@ impl<C : Encapsulate, E : Encrypt> EncryptedChannelA<C, E> {
     }
 
     pub fn handshake_start(&mut self) -> Result<Vec<u8>, CepError> {
-        if (self.kem.is_none()) {
+        if self.kem.is_none() {
             return Err(CepError::StructUninitialized);
         }
         let kem = self.kem.as_ref().unwrap();
@@ -32,7 +32,7 @@ impl<C : Encapsulate, E : Encrypt> EncryptedChannelA<C, E> {
     }
 
     pub fn handshake_finish(&mut self, handshake : Vec<u8>) -> Result<(), CepError> {
-        if (self.kem.is_none()) {
+        if self.kem.is_none() {
             return Err(CepError::StructUninitialized);
         }
         let kem = self.kem.as_ref().unwrap();
