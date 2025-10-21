@@ -1,0 +1,41 @@
+[Error]
+enum CepError {
+    "StructUninitialized",
+    "InvalidKey",
+    "EncryptionFailure",
+};
+
+dictionary CepKeypair {
+    bytes public;
+    bytes private;
+};
+
+dictionary CepEncapsulation {
+    bytes ciphertext;
+    bytes shared_key;
+};
+
+namespace cep {
+    [Throws=CepError]
+    bytes aes_encrypt(bytes key, bytes plaintext);
+
+    [Throws=CepError]
+    bytes aes_decrypt(bytes key, bytes ciphertext);
+
+    CepKeypair x25519_generate_pair();
+    CepEncapsulation x25519_encapsulate(bytes public_key);
+    bytes x25519_decapsulate(bytes private_key, bytes ciphertext);
+
+    CepKeypair mlkem512_generate_pair();
+    CepEncapsulation mlkem512_encapsulate(bytes public_key);
+    bytes mlkem512_decapsulate(bytes private_key, bytes ciphertext);
+
+    CepKeypair mlkem768_generate_pair();
+    CepEncapsulation mlkem768_encapsulate(bytes public_key);
+    bytes mlkem768_decapsulate(bytes private_key, bytes ciphertext);
+
+    CepKeypair mlkem1024_generate_pair();
+    CepEncapsulation mlkem1024_encapsulate(bytes public_key);
+    bytes mlkem1024_decapsulate(bytes private_key, bytes ciphertext);
+
+};

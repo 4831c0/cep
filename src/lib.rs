@@ -1,5 +1,11 @@
 extern crate core;
 
+use crate::aes::AesGcm256;
+use crate::common::{Encapsulate, Encrypt, Keypair};
+use crate::error::CepError;
+use crate::mlkem::{MlKem1024Encapsulation, MlKem512Encapsulation, MlKem768Encapsulation};
+use crate::x25519::X25519Encapsulation;
+
 pub mod mlkem;
 pub mod common;
 pub mod x25519;
@@ -138,4 +144,160 @@ mod tests {
         assert_eq!(plain_msg, dec_msg.as_slice());
 
     }
+}
+
+
+uniffi::include_scaffolding!("cep");
+
+fn aes_encrypt(key: Vec<u8>, plaintext: Vec<u8>) -> Result<Vec<u8>, CepError> {
+    let c = AesGcm256::from_key(key.as_slice())?;
+    let e = c.encrypt(plaintext.as_slice());
+
+    if e.is_err() {
+        Err(CepError::EncryptionFailure)
+    } else {
+        Ok(e.unwrap())
+    }
+}
+
+fn aes_decrypt(key: Vec<u8>, ciphertext: Vec<u8>) -> Result<Vec<u8>, CepError> {
+    let c = AesGcm256::from_key(key.as_slice())?;
+    let e = c.decrypt(ciphertext.as_slice());
+
+    if e.is_err() {
+        Err(CepError::EncryptionFailure)
+    } else {
+        Ok(e.unwrap())
+    }
+}
+
+struct CepKeypair {
+    public: Vec<u8>,
+    private: Vec<u8>
+}
+
+struct CepEncapsulation {
+    ciphertext: Vec<u8>,
+    shared_key: Vec<u8>
+}
+
+fn x25519_generate_pair() -> CepKeypair {
+    let pair = X25519Encapsulation::generate_keypair();
+
+    CepKeypair {
+        public: pair.keypair.public.clone(),
+        private: pair.keypair.private.clone()
+    }
+}
+
+fn x25519_encapsulate(public_key: Vec<u8>) -> CepEncapsulation {
+    let pair = X25519Encapsulation::from_pk(public_key.as_slice());
+    let cap = pair.encapsulate();
+
+    CepEncapsulation {
+        ciphertext: cap.ciphertext,
+        shared_key: cap.shared_key,
+    }
+}
+
+fn x25519_decapsulate(private_key: Vec<u8>, ciphertext: Vec<u8>) -> Vec<u8> {
+    let pair = X25519Encapsulation {
+        keypair: Keypair {
+            public: vec![],
+            private: private_key,
+        },
+    };
+
+    pair.decapsulate(ciphertext.as_slice())
+}
+
+
+fn mlkem512_generate_pair() -> CepKeypair {
+    let pair = MlKem512Encapsulation::generate_keypair();
+
+    CepKeypair {
+        public: pair.keypair.public.clone(),
+        private: pair.keypair.private.clone()
+    }
+}
+
+fn mlkem512_encapsulate(public_key: Vec<u8>) -> CepEncapsulation {
+    let pair = MlKem512Encapsulation::from_pk(public_key.as_slice());
+    let cap = pair.encapsulate();
+
+    CepEncapsulation {
+        ciphertext: cap.ciphertext,
+        shared_key: cap.shared_key,
+    }
+}
+
+fn mlkem512_decapsulate(private_key: Vec<u8>, ciphertext: Vec<u8>) -> Vec<u8> {
+    let pair = MlKem512Encapsulation {
+        keypair: Keypair {
+            public: vec![],
+            private: private_key,
+        },
+    };
+
+    pair.decapsulate(ciphertext.as_slice())
+}
+
+fn mlkem768_generate_pair() -> CepKeypair {
+    let pair = MlKem768Encapsulation::generate_keypair();
+
+    CepKeypair {
+        public: pair.keypair.public.clone(),
+        private: pair.keypair.private.clone()
+    }
+}
+
+fn mlkem768_encapsulate(public_key: Vec<u8>) -> CepEncapsulation {
+    let pair = MlKem768Encapsulation::from_pk(public_key.as_slice());
+    let cap = pair.encapsulate();
+
+    CepEncapsulation {
+        ciphertext: cap.ciphertext,
+        shared_key: cap.shared_key,
+    }
+}
+
+fn mlkem768_decapsulate(private_key: Vec<u8>, ciphertext: Vec<u8>) -> Vec<u8> {
+    let pair = MlKem768Encapsulation {
+        keypair: Keypair {
+            public: vec![],
+            private: private_key,
+        },
+    };
+
+    pair.decapsulate(ciphertext.as_slice())
+}
+
+fn mlkem1024_generate_pair() -> CepKeypair {
+    let pair = MlKem1024Encapsulation::generate_keypair();
+
+    CepKeypair {
+        public: pair.keypair.public.clone(),
+        private: pair.keypair.private.clone()
+    }
+}
+
+fn mlkem1024_encapsulate(public_key: Vec<u8>) -> CepEncapsulation {
+    let pair = MlKem1024Encapsulation::from_pk(public_key.as_slice());
+    let cap = pair.encapsulate();
+
+    CepEncapsulation {
+        ciphertext: cap.ciphertext,
+        shared_key: cap.shared_key,
+    }
+}
+
+fn mlkem1024_decapsulate(private_key: Vec<u8>, ciphertext: Vec<u8>) -> Vec<u8> {
+    let pair = MlKem1024Encapsulation {
+        keypair: Keypair {
+            public: vec![],
+            private: private_key,
+        },
+    };
+
+    pair.decapsulate(ciphertext.as_slice())
 }
